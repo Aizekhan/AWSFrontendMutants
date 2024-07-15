@@ -1,18 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import './App.css';
 
 function App() {
-    const [message, setMessage] = useState('');
-
-    useEffect(() => {
-        fetch('https://your-backend-app-name.herokuapp.com')
-            .then(response => response.text())
-            .then(data => setMessage(data));
-    }, []);
-
     return (
         <div className="App">
             <header className="App-header">
-                <p>{message}</p>
+                <p>
+                    Edit <code>src/App.js</code> and save to reload.
+                </p>
             </header>
         </div>
     );
