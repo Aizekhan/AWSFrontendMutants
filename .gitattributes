@@ -1,1 +1,10 @@
+# Всі текстові файли
 * text=auto
+
+# Перевизначити певні файли
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf

@@ -1,24 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import './App.css';
+import React, { useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import axios from 'axios';
+import ChooseHero from './components/Pages/ChooseHero';
+import { useUserStats, UserStatsProvider } from './context/UserStatsContext';
 
 function App() {
-    const [message, setMessage] = useState('');
+    const { updateUserStats, userStats } = useUserStats();
 
     useEffect(() => {
-        fetch('https://backend-cryptap.herokuapp.com/api/test')
-            .then(response => response.json())
-            .then(data => setMessage(data.message))
-            .catch(error => console.error('Error fetching data:', error));
-    }, []);
+        const fetchData = async () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/userProgress`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
+                    updateUserStats(response.data);
+                } catch (error) {
+                    console.error('Error fetching user data:', error);
+                }
+            }
+        };
+        fetchData();
+    }, [updateUserStats]);
+
+    if (!userStats || !userStats.currentHeroId) {
+        return (
+            <Router>
+                <Routes>
+                    <Route path="/choose-hero" element={<ChooseHero />} />
+                    <Route path="*" element={<Navigate to="/choose-hero" />} />
+                </Routes>
+            </Router>
+        );
+    }
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Welcome to CrypTapMutants!</h1>
-                <p>{message}</p>
-            </header>
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/choose-hero" element={<ChooseHero />} />
+            </Routes>
+        </Router>
     );
 }
 
-export default App;
+export default function AppWrapper() {
+    return (
+        <UserStatsProvider>
+            <App />
+        </UserStatsProvider>
+    );
+}
